@@ -1,0 +1,27 @@
+# Environment
+.env
+
+# Odoo
+addons/*
+!addons/.gitkeep
+filestore/
+sessions/
+
+# Logs
+*.log
+
+# Database
+*.sql
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
