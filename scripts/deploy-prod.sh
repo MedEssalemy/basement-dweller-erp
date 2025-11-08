@@ -4,9 +4,31 @@ set -e
 
 echo "Deploying Odoo 19 to Digital Ocean Droplet"
 
-# Variables
-DOMAIN="erp.moroccocomputers.com"
-EMAIL="your-email@example.com"  # Change this to your real email
+# Load environment variables from .env file
+if [ -f .env ]; then
+    echo "Loading environment variables from .env file..."
+    set -a  # Automatically export all variables
+    source .env
+    set +a  # Stop automatic exporting
+else
+    echo "Error: .env file not found!"
+    echo "Please create a .env file with DOMAIN and EMAIL variables"
+    exit 1
+fi
+
+# Check if required variables are set
+if [ -z "$DOMAIN" ]; then
+    echo "Error: DOMAIN variable not set in .env file"
+    exit 1
+fi
+
+if [ -z "$EMAIL" ]; then
+    echo "Error: EMAIL variable not set in .env file"
+    exit 1
+fi
+
+echo "Using Domain: $DOMAIN"
+echo "Using Email: $EMAIL"
 
 # Update system
 echo "Updating system packages..."
