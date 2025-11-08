@@ -6,7 +6,7 @@ echo "Deploying Odoo 19 to Digital Ocean Droplet"
 
 # Variables
 DOMAIN="erp.moroccocomputers.com"
-EMAIL="your-email@example.com"  # Change this
+EMAIL="your-email@example.com"  # Change this to your real email
 
 # Update system
 echo "Updating system packages..."
@@ -36,6 +36,10 @@ sudo apt install -y nginx
 echo "Installing Certbot..."
 sudo apt install -y certbot python3-certbot-nginx
 
+# Get SSL certificate first (before Nginx config)
+echo "Setting up SSL certificate..."
+sudo certbot certonly --standalone -d $DOMAIN --non-interactive --agree-tos -m $EMAIL
+
 # Copy Nginx configuration
 echo "Configuring Nginx..."
 sudo cp nginx/odoo.conf /etc/nginx/sites-available/odoo
@@ -60,10 +64,6 @@ docker-compose up -d
 # Reload Nginx
 sudo systemctl reload nginx
 
-# Setup SSL with Certbot
-echo "Setting up SSL certificate..."
-sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m $EMAIL
-
 # Setup auto-renewal
 sudo systemctl enable certbot.timer
 
@@ -77,8 +77,3 @@ sudo ufw --force enable
 echo ""
 echo "Deployment complete!"
 echo "Access your Odoo instance at: https://$DOMAIN"
-echo ""
-echo "Important: Update the following:"
-echo "1. Change passwords in .env file"
-echo "2. Update admin_passwd in config/odoo.conf"
-echo "3. Update EMAIL in this script for SSL certificates"
