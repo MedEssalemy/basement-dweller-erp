@@ -16,7 +16,6 @@ services:
       - HOST=db
       - USER=${POSTGRES_USER:-odoo}
       - PASSWORD=${POSTGRES_PASSWORD}
-      # Add these lines:
       - DB_NAME=postgres
       - DB_PORT=5432
     restart: unless-stopped
