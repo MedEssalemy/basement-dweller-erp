@@ -4,21 +4,9 @@ set -e
 
 echo "Deploying Odoo 19 to Digital Ocean Droplet"
 
-# Load environment variables
-if [ -f .env ]; then
-    echo "Loading environment variables from .env file..."
-    export $(cat .env | grep -v '^#' | xargs)
-else
-    echo "Error: .env file not found!"
-    echo "Please create a .env file with the required variables."
-    exit 1
-fi
-
-# Validate required variables
-if [ -z "$EMAIL" ] || [ "$EMAIL" = "your-email@example.com" ]; then
-    echo "Error: Please set a valid email address in the .env file"
-    exit 1
-fi
+# Variables
+DOMAIN="erp.moroccocomputers.com"
+EMAIL="your-email@example.com"  # Change this to your real email
 
 # Update system
 echo "Updating system packages..."
@@ -51,20 +39,22 @@ sudo apt install -y certbot python3-certbot-nginx
 # Create certbot webroot directory
 sudo mkdir -p /var/www/certbot
 
-# Copy Nginx configuration (HTTP only first)
+# Copy Nginx configuration
 echo "Configuring Nginx..."
 sudo cp nginx/odoo.conf /etc/nginx/sites-available/odoo
 sudo ln -sf /etc/nginx/sites-available/odoo /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 
-# Start Nginx to serve ACME challenges
+# Ensure Nginx is running
+echo "Starting Nginx service..."
+sudo systemctl enable nginx
 sudo systemctl start nginx
 
 # Get SSL certificate
 echo "Setting up SSL certificate..."
 sudo certbot certonly --webroot -w /var/www/certbot -d $DOMAIN --non-interactive --agree-tos -m $EMAIL
 
-# Now test Nginx configuration (with SSL certs in place)
+# Test Nginx configuration
 sudo nginx -t
 
 # Copy production config
@@ -95,4 +85,3 @@ sudo ufw --force enable
 echo ""
 echo "Deployment complete!"
 echo "Access your Odoo instance at: https://$DOMAIN"
-echo "Admin password: $ODOO_ADMIN_PASSWORD"
