@@ -7,7 +7,7 @@ services:
         condition: service_healthy
     ports:
       - "8069:8069"
-      - "8072:8072"  # Longpolling port
+      - "8072:8072"
     volumes:
       - odoo-web-data:/var/lib/odoo
       - ./config/odoo.conf:/etc/odoo/odoo.conf
@@ -16,11 +16,12 @@ services:
       - HOST=db
       - USER=${POSTGRES_USER:-odoo}
       - PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=postgres
+      # Add these lines:
+      - DB_NAME=postgres
+      - DB_PORT=5432
     restart: unless-stopped
     networks:
       - odoo-network
-
   db:
     image: postgres:18
     container_name: basement-dweller-db
